@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Successful</title>
+  <style>
+    body {
+      background-color: green;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .box {
+      background: white;
+      color: black;
+      padding: 30px;
+      border-radius: 10px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    async function checkSession() {
+      const response = await fetch('/session');
+      const data = await response.json();
+      if (!data.access_token) {
+        window.location.href = '/';
+      }
+    }
+    window.onload = checkSession;
+  </script>
+</head>
+<body>
+  <div class="box">
+    <h1>Login Successful!</h1>
+    <button onclick="location.href='/'">Back to App</button>
+  </div>
+</body>
+</html>

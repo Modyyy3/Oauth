@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth App</title>
+    <script>
+        // As soon as the page loads, check for "?login=success"
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('login') === 'success') {
+                // Get the provider from the session
+                try {
+                    const response = await fetch('/session');
+                    const session = await response.json();
+                    
+                    if (session.provider) {
+                        const message = `Login successful with ${session.provider}!`;
+                        
+                        // 1) Show browser notification if permission granted
+                        if (Notification.permission === 'granted') {
+                            new Notification(message);
+                        } else if (Notification.permission !== 'denied') {
+                            Notification.requestPermission().then(permission => {
+                                if (permission === 'granted') {
+                                    new Notification(message);
+                                }
+                            });
+                        }
+                        
+                        // 2) Show in-page alert
+                        alert(message);
+                    }
+                    
+                    // 3) Clean up the URL (remove the ?login=success)
+                    params.delete('login');
+                    history.replaceState(null, '', window.location.pathname);
+                } catch (error) {
+                    console.error('Error checking session:', error);
+                }
+            }
+        });
+    </script>        
+    <style>
+        body {
+            background-color: #191970;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .box {
+            background: white;
+            color: black;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: white;
+        }
+        .github-button {
+            background-color: #24292e; /* GitHub dark background */
+        }
+        .github-button:hover {
+            background-color: #444d56;
+        }
+        .google-button {
+            background-color: #ff2f2f; /* Google blue */
+        }
+        .google-button:hover {
+            background-color: #a01a1a;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Welcome to OAuth App</h1>
+        <h3>Log in with your favorite provider</h3>
+        <div class="box">
+            <button class="github-button" onclick="location.href='/auth/github'">Login with GitHub</button><br>
+            <button class="google-button" onclick="location.href='/auth/google'">Login with Google</button><br>
+        </div>
+    </div>
+</body>
+</html>
